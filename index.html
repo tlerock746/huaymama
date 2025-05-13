@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>โปรแกรมคำนวณยอดเงินและหวย</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center; 
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+            font-size: 16px; 
+        }
+
+        .landing-container, .app-container { /* Common styling for containers */
+            max-width: 800px;
+            width: 100%;
+            background-color: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+            padding: 2rem; 
+            margin-top: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .landing-container {
+            text-align: center;
+        }
+        .landing-container h1 {
+            font-size: 1.75rem; 
+        }
+        .landing-container p {
+            font-size: 1.1rem; 
+            margin-bottom: 2rem;
+        }
+
+        .landing-button {
+            display: block;
+            width: 100%;
+            max-width: 350px; 
+            margin: 1.5rem auto; 
+            padding: 1.25rem 2rem; 
+            font-size: 1.25rem; 
+            font-weight: bold;
+            color: white;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .landing-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .tod-lottery-btn {
+            background-color: #2563eb; 
+        }
+        .tod-lottery-btn:hover {
+            background-color: #1d4ed8; 
+        }
+        .normal-lottery-btn {
+            background-color: #16a34a; 
+        }
+        .normal-lottery-btn:hover {
+            background-color: #15803d; 
+        }
+
+
+        .tab-container {
+            margin-bottom: 2rem; 
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap; 
+            gap: 0.75rem; 
+        }
+        .tab-button {
+            padding: 0.75rem 1rem; 
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #374151; 
+            background-color: #e5e7eb; 
+            cursor: pointer;
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.9rem; 
+            border: 1px solid #d1d5db; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            white-space: nowrap; 
+            display: none; 
+        }
+        .tab-button.common-button { 
+            display: inline-block !important; 
+        }
+
+
+        .tab-button:hover {
+            background-color: #d1d5db; 
+            border-color: #9ca3af; 
+        }
+
+        .tab-button.active {
+            background-color: #1d4ed8; 
+            color: white;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-color: #1e3a8a; 
+        }
+        
+        .back-to-landing-button {
+            display: inline-block; 
+            margin-top: 1.5rem;
+            margin-bottom: 1rem; 
+            padding: 0.75rem 1.5rem; 
+            font-size: 0.95rem; 
+            font-weight: 600;
+            color: #fff;
+            background-color: #4b5563; 
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .back-to-landing-button:hover {
+            background-color: #374151; 
+        }
+
+
+        .tab {
+            display: none;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        .input-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.25rem; 
+            margin-bottom: 2rem; 
+        }
+
+        .input-container label {
+            font-weight: 600;
+            color: #1f2937; 
+            font-size: 1rem; 
+        }
+        
+        .radio-group-label {
+             margin-bottom: 0.75rem; 
+        }
+
+        .radio-container {
+            display: flex;
+            gap: 1.5rem; 
+            align-items: center;
+            padding: 0.5rem 0; 
+        }
+
+        .radio-container label {
+           margin-left: 0.5rem; 
+           font-weight: normal; 
+           color: #374151; 
+           font-size: 1rem; 
+        }
+        .radio-container input[type="radio"] {
+            accent-color: #1d4ed8; 
+            transform: scale(1.2); 
+        }
+
+        .text-input,
+        .number-input,
+        .select-input {
+            border: 1px solid #9ca3af; 
+            border-radius: 0.5rem; 
+            padding: 0.85rem 1rem; 
+            font-size: 1.1rem; 
+            width: 100%;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            outline: none;
+            background-color: #f9fafb; 
+        }
+
+        .text-input:focus,
+        .number-input:focus,
+        .select-input:focus {
+            border-color: #1d4ed8; 
+            box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.3); 
+            background-color: #fff;
+        }
+
+        .number-input {
+            text-align: center;
+        }
+
+        .message-box {
+            margin-top: 2rem; 
+            padding: 1.25rem; 
+            border-radius: 0.5rem;
+            border-width: 1px;
+            border-style: solid;
+            font-size: 1rem; 
+            text-align: center;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(10px);
+            display: none; 
+        }
+        .message-box.show {
+            opacity: 1;
+            transform: translateY(0);
+            display: block;
+        }
+
+        .message-box.error {
+            background-color: #fee2e2; 
+            border-color: #f87171; 
+            color: #b91c1c; 
+        }
+
+        .message-box.warning {
+            background-color: #fffbeb; 
+            border-color: #fcd34d; 
+            color: #b45309; 
+        }
+
+        .message-box.success {
+            background-color: #dcfce7; 
+            border-color: #86efac; 
+            color: #15803d; 
+        }
+
+        .data-table { 
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 0.5rem;
+            overflow: hidden; 
+            box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.05); 
+            margin-top: 1.5rem; 
+        }
+
+        .data-table thead tr {
+            background-color: #dbeafe; 
+            color: #1e3a8a; 
+            text-align: left;
+        }
+
+        .data-table thead th {
+            padding: 1rem 1.25rem; 
+            font-weight: 700; 
+            text-transform: uppercase;
+            font-size: 0.9rem; 
+            letter-spacing: 0.05em;
+        }
+
+        .data-table tbody tr {
+            background-color: white;
+            border-bottom: 1px solid #e5e7eb; 
+            transition: background-color 0.2s ease;
+        }
+
+        .data-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .data-table tbody tr:hover {
+            background-color: #f3f4f6; 
+        }
+
+        .data-table tbody td {
+            padding: 1rem 1.25rem; 
+            font-size: 1rem; 
+            color: #374151; 
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch; 
+        }
+
+        .action-button { 
+            padding: 0.6rem 1rem; 
+            border-radius: 0.375rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 0.9rem; 
+            border: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .edit-button {
+            background-color: #f59e0b; 
+        }
+        .edit-button:hover {
+            background-color: #d97706; 
+        }
+
+        .delete-button {
+            background-color: #ef4444; 
+        }
+        .delete-button:hover {
+            background-color: #dc2626; 
+        }
+        
+        .main-action-button { 
+            padding: 0.85rem 1.75rem; 
+            border-radius: 0.5rem;
+            font-weight: bold; 
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 1.05rem; 
+            border: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .main-action-button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .summary-card, .profile-card {
+            background-color: #fff;
+            border-radius: 0.75rem; 
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
+            padding: 1.75rem; 
+            margin-bottom: 1.75rem; 
+        }
+
+        .summary-card h3, .profile-card h3 { 
+            font-size: 1.25rem; 
+            font-weight: 700; 
+            color: #111827; 
+            margin-bottom: 1.25rem; 
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 0.75rem; 
+        }
+         .summary-card h4, .profile-card h4 { 
+            font-size: 1.1rem; 
+            font-weight: 600;
+            color: #1f2937; 
+            margin-bottom: 1rem; 
+        }
+
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+            gap: 1.25rem; 
+        }
+        .grid-container > div p:first-child {
+            font-size: 1rem; 
+            color: #4b5563; 
+            margin-bottom: 0.25rem;
+        }
+        .grid-container > div p:last-child {
+            font-size: 1.4rem; 
+            font-weight: bold;
+        }
+        
+        #tod-summary-duplicate-names div, #normal-summary-profile-totals .p-3, #normal-summary-duplicate-list div { 
+            padding: 0.85rem; 
+            margin-bottom: 0.75rem; 
+            border-radius: 0.375rem;
+            font-size: 0.95rem; 
+        }
+        #tod-summary-duplicate-names div {
+             background-color: #fef3c7; 
+             border: 1px solid #fde68a; 
+             color: #92400e; 
+        }
+        #normal-summary-duplicate-list div { 
+            background-color: #e0e7ff; 
+            border: 1px solid #c7d2fe; 
+            color: #3730a3; 
+        }
+
+
+        #clear-data {
+            background-color: #dc2626; 
+            color: white;
+        }
+        #clear-data:hover {
+            background-color: #b91c1c; 
+        }
+
+        /* Main page title */
+        .app-container > h1, .landing-container > h1 { /* Removed .key-prompt-container > h1 */
+            font-size: 1.75rem; 
+            margin-bottom: 2rem; 
+        }
+        /* Tab content titles */
+        .tab > h2 {
+            font-size: 1.4rem; 
+            margin-bottom: 1.75rem; 
+            color: #111827;
+        }
+
+
+        @media (max-width: 768px) { 
+            .tab-button {
+                font-size: 0.8rem; 
+                padding: 0.6rem 0.7rem;
+            }
+             .app-container > h1, .landing-container > h1 { /* Removed .key-prompt-container > h1 */
+                font-size: 1.5rem; 
+            }
+             .tab > h2 {
+                font-size: 1.2rem; 
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                font-size: 15px; 
+            }
+            .landing-container, .app-container { /* Removed .key-prompt-container */
+                padding: 1.25rem; 
+            }
+            .main-action-button {
+                font-size: 1rem; 
+                padding: 0.75rem 1.5rem;
+            }
+            .input-container label, .radio-container label, .data-table tbody td, .summary-card h3, .profile-card h3, .summary-card h4, .profile-card h4 {
+                font-size: 0.95rem; 
+            }
+            .grid-container > div p:first-child {
+                font-size: 0.9rem;
+            }
+            .grid-container > div p:last-child {
+                font-size: 1.2rem;
+            }
+            .text-input, .number-input {
+                font-size: 1rem; 
+                padding: 0.8rem;
+            }
+             .app-container > h1, .landing-container > h1 { /* Removed .key-prompt-container > h1 */
+                font-size: 1.4rem; 
+            }
+             .tab > h2 {
+                font-size: 1.15rem; 
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 md:p-6">
+    <div id="landing-page" class="landing-container"> <h1 class="text-2xl sm:text-3xl font-bold text-blue-700 mb-8">ยินดีต้อนรับสู่โปรแกรมคำนวณหวย</h1>
+        <p class="text-gray-600 mb-8 text-base sm:text-lg">กรุณาเลือกประเภทหวยที่ต้องการใช้งาน:</p>
+        <button id="goto-tod-lottery" class="landing-button tod-lottery-btn">เข้าสู่ระบบหวยโต๊ด</button>
+        <button id="goto-normal-lottery" class="landing-button normal-lottery-btn">เข้าสู่ระบบหวยปกติ (บน-ล่าง)</button>
+    </div>
+
+    <div id="app-container" class="app-container" style="display: none;"> 
+        <div class="flex justify-end"> 
+             <button id="back-to-landing" class="back-to-landing-button mb-4">กลับหน้าหลัก</button>
+        </div>
+        <h1 class="text-xl sm:text-2xl font-bold text-blue-700 text-center mb-6">โปรแกรมคำนวณยอดเงินและหวย</h1>
+
+        <div class="tab-container">
+            <button class="tab-button" data-mode="tod" data-tab="tod-input">กรอก (โต๊ด)</button>
+            <button class="tab-button" data-mode="tod" data-tab="tod-display">แสดงผล (โต๊ด)</button>
+            <button class="tab-button" data-mode="tod" data-tab="tod-summary">สรุป (โต๊ด)</button>
+            <button class="tab-button" data-mode="tod" data-tab="tod-lottery">คำนวณ (โต๊ด)</button>
+            <button class="tab-button" data-mode="normal" data-tab="normal-input">กรอก (ปกติ)</button> 
+            <button class="tab-button" data-mode="normal" data-tab="normal-display">แสดงผล (ปกติ)</button> 
+            <button class="tab-button" data-mode="normal" data-tab="normal-summary">สรุป (ปกติ)</button> 
+            <button class="tab-button" data-mode="normal" data-tab="normal-calc">คำนวณ (ปกติ)</button> 
+            <button id="clear-data" class="tab-button common-button">ล้างข้อมูลทั้งหมด</button>
+        </div>
+
+        <div id="tod-input" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">กรอกข้อมูล (หวยโต๊ด)</h2>
+            <div class="input-container">
+                <label for="tod-name-input">ชื่อ:</label>
+                <input type="text" id="tod-name-input" class="text-input" placeholder="กรุณากรอกชื่อ">
+            </div>
+            <div class="input-container">
+                <label for="tod-number-input">เลข (3 หลักเท่านั้น):</label> 
+                <input type="number" id="tod-number-input" class="number-input" placeholder="กรุณากรอกเลข 3 หลัก"> 
+            </div>
+            <div class="input-container">
+                <label for="tod-money-input" id="tod-money-label">ยอดเงิน:</label>
+                <input type="number" id="tod-money-input" class="number-input" placeholder="กรุณากรอกยอดเงิน">
+            </div>
+            <div class="input-container">
+                <label class="radio-group-label">ประเภท (โต๊ด):</label>
+                <div class="radio-container">
+                    <input type="radio" id="tod-category-teng-input" name="tod-entry-category" value="tod_teng" checked> <label for="tod-category-teng-input">โต๊ดเต็ง</label> <input type="radio" id="tod-category-6กลับ-input" name="tod-entry-category" value="tod_6กลับ"> <label for="tod-category-6กลับ-input">โต๊ด6กลับ</label> </div>
+            </div>
+            <div class="flex justify-start gap-4 mt-6">
+                <button id="tod-add-data-button" class="main-action-button bg-green-500 hover:bg-green-600">เพิ่มข้อมูล (โต๊ด)</button>
+            </div>
+            <div id="tod-input-message-box" class="message-box"></div>
+        </div>
+
+        <div id="tod-display" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">แสดงข้อมูล (หวยโต๊ด)</h2>
+            <div class="input-container">
+                <label for="tod-search-input">ค้นหาชื่อ (โต๊ด):</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="tod-search-input" class="text-input flex-grow" placeholder="ค้นหาด้วยชื่อ...">
+                    <button id="tod-search-data-button" class="main-action-button bg-blue-500 hover:bg-blue-600">ค้นหา</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="tod-data-display-table" class="data-table w-full">
+                    <thead>
+                        <tr>
+                            <th>ชื่อ</th>
+                            <th>เลข</th>
+                            <th>ยอดเงินรวมที่จ่าย</th>
+                            <th>ประเภท</th>
+                            <th class="text-center">แก้ไข</th>
+                            <th class="text-center">ลบ</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="tod-summary" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">สรุปยอดรวม (หวยโต๊ด)</h2>
+            <div class="summary-card">
+                <h3 class="text-xl font-semibold text-gray-900 mb-4">ภาพรวม (โต๊ด)</h3>
+                <div class="grid-container">
+                    <div>
+                        <p>ยอดรวมทั้งหมดที่ลูกค้าจ่าย:</p>
+                        <p id="tod-summary-total-money" class="text-2xl font-bold text-green-600">0 บาท</p>
+                    </div>
+                    <div>
+                        <p>ยอดรวมเลขที่มีการซื้อซ้ำ (โต๊ด):</p>
+                        <p id="tod-summary-sum-duplicate" class="text-2xl font-bold text-red-600">0 บาท</p>
+                    </div>
+                    <div>
+                        <p>ยอดรวมเลขที่ไม่มีการซื้อซ้ำ (โต๊ด):</p>
+                        <p id="tod-summary-sum-unique" class="text-2xl font-bold text-blue-600">0 บาท</p>
+                    </div>
+                    <div>
+                        <p>จำนวนชุดเลข (โต๊ด) ที่ซ้ำ:</p>
+                        <p id="tod-summary-duplicate-count" class="text-2xl font-bold text-purple-600">0 ชุด</p>
+                    </div>
+                    <div class="col-span-full">
+                        <p>ชุดเลข (โต๊ด) ที่มีการซื้อซ้ำ (เรียงน้อยไปมาก):</p>
+                        <p id="tod-summary-duplicate-numbers" class="text-xl text-gray-900 whitespace-pre-wrap"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-card">
+                <h3>ยอดรวมของแต่ละโปรไฟล์ (โต๊ด - ที่ลูกค้าจ่าย):</h3>
+                <div id="tod-summary-profile-totals" class="grid-container"></div>
+            </div>
+            <div class="profile-card">
+                <h3>สรุปรายชื่อตามชุดเลข (โต๊ด) ที่ซ้ำ (ยอดที่ลูกค้าจ่าย):</h3>
+                <div id="tod-summary-duplicate-names" class="text-gray-700"></div>
+            </div>
+        </div>
+
+        <div id="tod-lottery" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">คำนวณหวย (โต๊ด)</h2>
+            <div class="input-container">
+                <label for="tod-lottery-number-input">หมายเลขที่ถูกรางวัล (3 หลักเท่านั้น):</label> 
+                <input type="number" id="tod-lottery-number-input" class="number-input" placeholder="กรุณากรอกหมายเลขรางวัล 3 หลัก"> 
+            </div>
+            <div class="input-container">
+                <label for="tod-lottery-prize-rate-teng">อัตราการจ่าย (โต๊ดเต็ง):</label> <input type="number" id="tod-lottery-prize-rate-teng" class="number-input" placeholder="บาท ต่อ 1 บาทที่ซื้อ (ยอดตั้งต้น)">
+            </div>
+            <div class="input-container">
+                <label for="tod-lottery-prize-rate-6กลับ">อัตราการจ่าย (โต๊ด6กลับ):</label> <input type="number" id="tod-lottery-prize-rate-6กลับ" class="number-input" placeholder="บาท ต่อ 1 บาทที่ซื้อ (ต่อยอดที่ซื้อต่อ 1 กลับ)">
+            </div>
+            <button id="tod-calculate-lottery-button" class="main-action-button bg-indigo-500 hover:bg-indigo-700 mb-6">คำนวณรางวัล (โต๊ด)</button>
+            <div id="tod-lottery-result-box" class="message-box"></div>
+        </div>
+
+        <div id="normal-input" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">กรอกข้อมูล (หวยปกติ บน-ล่าง)</h2>
+            <div class="input-container">
+                <label for="normal-name-input">ชื่อ:</label>
+                <input type="text" id="normal-name-input" class="text-input" placeholder="กรุณากรอกชื่อ">
+            </div>
+            <div class="input-container">
+                <label for="normal-number-input">เลข (2 หรือ 3 หลัก):</label>
+                <input type="number" id="normal-number-input" class="number-input" placeholder="กรุณากรอกเลข">
+            </div>
+            <div class="input-container">
+                <label for="normal-money-input">ยอดเงิน:</label>
+                <input type="number" id="normal-money-input" class="number-input" placeholder="กรุณากรอกยอดเงิน">
+            </div>
+            <div class="input-container">
+                <label class="radio-group-label">ประเภท (บน/ล่าง):</label>
+                <div class="radio-container">
+                    <input type="radio" id="normal-category-top" name="normal-entry-category" value="บน" checked>
+                    <label for="normal-category-top">บน</label>
+                    <input type="radio" id="normal-category-bottom" name="normal-entry-category" value="ล่าง">
+                    <label for="normal-category-bottom">ล่าง</label>
+                </div>
+            </div>
+            <button id="normal-add-data-button" class="main-action-button bg-green-500 hover:bg-green-600 mt-2">เพิ่มข้อมูล (หวยปกติ)</button>
+            <div id="normal-input-message-box" class="message-box mt-4"></div>
+        </div>
+
+        <div id="normal-display" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">แสดงข้อมูล (หวยปกติ บน-ล่าง)</h2>
+            <div class="input-container">
+                <label for="normal-search-input">ค้นหาชื่อ (หวยปกติ):</label>
+                <div class="flex flex-col sm:flex-row gap-2">
+                    <input type="text" id="normal-search-input" class="text-input flex-grow" placeholder="ค้นหาด้วยชื่อ...">
+                    <button id="normal-search-data-button" class="main-action-button bg-blue-500 hover:bg-blue-600">ค้นหา</button>
+                </div>
+            </div>
+            <div class="table-wrapper">
+                <table id="normal-data-display-table" class="data-table w-full">
+                    <thead>
+                        <tr>
+                            <th>ชื่อ</th>
+                            <th>เลข</th>
+                            <th>ยอดเงิน</th>
+                            <th>ประเภท</th>
+                            <th class="text-center">แก้ไข</th>
+                            <th class="text-center">ลบ</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="normal-summary" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">สรุปยอดรวม (หวยปกติ บน-ล่าง)</h2>
+            <div class="summary-card">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">ภาพรวม (หวยปกติ)</h4>
+                <div class="grid-container">
+                    <div>
+                        <p>ยอดรวม (บน):</p>
+                        <p id="normal-summary-total-top" class="text-xl font-bold text-sky-600">0 บาท</p>
+                    </div>
+                    <div>
+                        <p>ยอดรวม (ล่าง):</p>
+                        <p id="normal-summary-total-bottom" class="text-xl font-bold text-orange-600">0 บาท</p>
+                    </div>
+                    <div>
+                        <p>ยอดรวมทั้งหมด (หวยปกติ):</p>
+                        <p id="normal-summary-total-all" class="text-xl font-bold text-green-600">0 บาท</p>
+                    </div>
+                </div>
+            </div>
+            <div class="profile-card mt-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">ยอดรวมของแต่ละโปรไฟล์ (หวยปกติ):</h4>
+                <div id="normal-summary-profile-totals" class="grid-container"></div>
+            </div>
+            <div class="profile-card mt-4">
+                <h4 class="text-lg font-semibold text-gray-800 mb-3">เลขที่ซื้อซ้ำ (หวยปกติ):</h4>
+                <div id="normal-summary-duplicate-list">
+                    <div class="mb-2">
+                        <strong class="text-gray-700">เลขซ้ำ (บน):</strong>
+                        <p id="normal-duplicate-numbers-top" class="whitespace-pre-wrap text-sm"></p>
+                    </div>
+                    <div>
+                        <strong class="text-gray-700">เลขซ้ำ (ล่าง):</strong>
+                        <p id="normal-duplicate-numbers-bottom" class="whitespace-pre-wrap text-sm"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="normal-calc" class="tab bg-white rounded-lg p-4 sm:p-6">
+            <h2 class="text-lg sm:text-xl font-semibold text-gray-800 mb-6">คำนวณรางวัล (หวยปกติ บน-ล่าง)</h2>
+            <div class="input-container">
+                <label for="normal-lottery-number-top">หมายเลขที่ถูกรางวัล (บน):</label>
+                <input type="number" id="normal-lottery-number-top" class="number-input" placeholder="เลขรางวัลบน">
+            </div>
+            <div class="input-container">
+                <label for="normal-lottery-prize-rate-top">อัตราการจ่าย (บน):</label>
+                <input type="number" id="normal-lottery-prize-rate-top" class="number-input" placeholder="บาทต่อ 1 บาท">
+            </div>
+            <hr class="my-4">
+            <div class="input-container">
+                <label for="normal-lottery-number-bottom">หมายเลขที่ถูกรางวัล (ล่าง):</label>
+                <input type="number" id="normal-lottery-number-bottom" class="number-input" placeholder="เลขรางวัลล่าง">
+            </div>
+            <div class="input-container">
+                <label for="normal-lottery-prize-rate-bottom">อัตราการจ่าย (ล่าง):</label>
+                <input type="number" id="normal-lottery-prize-rate-bottom" class="number-input" placeholder="บาทต่อ 1 บาท">
+            </div>
+            <button id="normal-calculate-lottery-button" class="main-action-button bg-indigo-500 hover:bg-indigo-700 mt-2 mb-6">คำนวณรางวัล (หวยปกติ)</button>
+            <div id="normal-lottery-result-box" class="message-box"></div>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Constants for Tod Lottery ---
+        const TOD_CATEGORY_TENG = 'tod_teng'; 
+        const TOD_CATEGORY_6กลับ = 'tod_6กลับ'; 
+
+        // --- DOM Elements for Tod Lottery ---
+        const todDataTableBody = document.getElementById('tod-data-display-table').getElementsByTagName('tbody')[0];
+        const todNameInputElement = document.getElementById('tod-name-input');
+        const todNumberInputElement = document.getElementById('tod-number-input');
+        const todMoneyInputElement = document.getElementById('tod-money-input');
+        const todMoneyLabelElement = document.getElementById('tod-money-label');
+        const todCategoryTengRadioElement = document.getElementById('tod-category-teng-input'); 
+        const todCategory6กลับRadioElement = document.getElementById('tod-category-6กลับ-input'); 
+        const todAddDataButtonElement = document.getElementById('tod-add-data-button');
+        const todSearchInputElement = document.getElementById('tod-search-input');
+        const todSearchDataButtonElement = document.getElementById('tod-search-data-button');
+        const todTotalMoneyLabelElement = document.getElementById('tod-summary-total-money');
+        const todSumDuplicateLabelElement = document.getElementById('tod-summary-sum-duplicate');
+        const todSumUniqueLabelElement = document.getElementById('tod-summary-sum-unique');
+        const todDuplicateCountLabelElement = document.getElementById('tod-summary-duplicate-count');
+        const todDuplicateNumbersLabelElement = document.getElementById('tod-summary-duplicate-numbers');
+        const todProfileTotalsDivElement = document.getElementById('tod-summary-profile-totals');
+        const todDuplicateNamesDivElement = document.getElementById('tod-summary-duplicate-names');
+        const todLotteryNumberInputElement = document.getElementById('tod-lottery-number-input');
+        const todPrizeRateTengInputElement = document.getElementById('tod-lottery-prize-rate-teng'); 
+        const todPrizeRate6กลับInputElement = document.getElementById('tod-lottery-prize-rate-6กลับ'); 
+        const todCalculateLotteryButtonElement = document.getElementById('tod-calculate-lottery-button');
+        const todLotteryResultDivElement = document.getElementById('tod-lottery-result-box');
+        const todInputMessageBoxElement = document.getElementById('tod-input-message-box');
+
+        // --- Application State for Tod Lottery ---
+        let todData = JSON.parse(localStorage.getItem('lotteryDataTodIntegratedV2')) || []; 
+        let todEditingName = null;
+        let todEditingOriginalNumber = null;
+        let todEditingOriginalCategory = null;
+
+        // --- Constants for Normal Lottery ---
+        const NORMAL_CATEGORY_TOP = 'บน';
+        const NORMAL_CATEGORY_BOTTOM = 'ล่าง';
+
+        // --- DOM Elements for Normal Lottery ---
+        const normalDataTableBody = document.getElementById('normal-data-display-table').getElementsByTagName('tbody')[0];
+        const normalNameInputElement = document.getElementById('normal-name-input');
+        const normalNumberInputElement = document.getElementById('normal-number-input');
+        const normalMoneyInputElement = document.getElementById('normal-money-input');
+        const normalCategoryTopRadioElement = document.getElementById('normal-category-top');
+        const normalCategoryBottomRadioElement = document.getElementById('normal-category-bottom');
+        const normalAddDataButtonElement = document.getElementById('normal-add-data-button');
+        const normalSearchInputElement = document.getElementById('normal-search-input');
+        const normalSearchDataButtonElement = document.getElementById('normal-search-data-button');
+        const normalSummaryTotalTopElement = document.getElementById('normal-summary-total-top');
+        const normalSummaryTotalBottomElement = document.getElementById('normal-summary-total-bottom');
+        const normalSummaryTotalAllElement = document.getElementById('normal-summary-total-all');
+        const normalProfileTotalsDivElement = document.getElementById('normal-summary-profile-totals');
+        const normalDuplicateNumbersTopElement = document.getElementById('normal-duplicate-numbers-top'); 
+        const normalDuplicateNumbersBottomElement = document.getElementById('normal-duplicate-numbers-bottom'); 
+        const normalLotteryNumberTopInputElement = document.getElementById('normal-lottery-number-top');
+        const normalPrizeRateTopInputElement = document.getElementById('normal-lottery-prize-rate-top');
+        const normalLotteryNumberBottomInputElement = document.getElementById('normal-lottery-number-bottom');
+        const normalPrizeRateBottomInputElement = document.getElementById('normal-lottery-prize-rate-bottom');
+        const normalCalculateLotteryButtonElement = document.getElementById('normal-calculate-lottery-button');
+        const normalLotteryResultDivElement = document.getElementById('normal-lottery-result-box');
+        const normalInputMessageBoxElement = document.getElementById('normal-input-message-box');
+        
+        // --- Application State for Normal Lottery ---
+        let normalData = JSON.parse(localStorage.getItem('lotteryDataNormalIntegratedV1')) || [];
+        let normalEditingName = null;
+        let normalEditingOriginalNumber = null;
+        let normalEditingOriginalCategory = null;
+
+
+        // --- Common DOM Elements ---
+        const clearDataButtonElement = document.getElementById('clear-data');
+        const tabButtonElements = document.querySelectorAll('.tab-button'); 
+        const tabElements = document.querySelectorAll('.tab');
+        const landingPageElement = document.getElementById('landing-page');
+        const appContainerElement = document.getElementById('app-container');
+        const gotoTodLotteryButton = document.getElementById('goto-tod-lottery');
+        const gotoNormalLotteryButton = document.getElementById('goto-normal-lottery');
+        const backToLandingButton = document.getElementById('back-to-landing');
+        // Key Prompt Elements are removed
+
+        // --- Utility Functions (Common) ---
+        function showMessage(element, message, type = 'info', duration = 3000) {
+            element.textContent = message;
+            element.className = `message-box ${type} show`;
+            setTimeout(() => {
+                element.classList.remove('show');
+                setTimeout(() => { if (!element.classList.contains('show')) element.style.display = 'none'; }, 300);
+            }, duration);
+        }
+        
+        function setActiveModeTabButtons(modeToShow) { 
+            tabButtonElements.forEach(btn => {
+                if (btn.id === 'clear-data') { 
+                    btn.style.display = modeToShow === 'none' ? 'none' : 'inline-block';
+                } else if (btn.dataset.mode === modeToShow) {
+                    btn.style.display = 'inline-block';
+                } else {
+                    btn.style.display = 'none';
+                }
+            });
+        }
+
+
+        function openTab(tabName) {
+            tabButtonElements.forEach(button => button.classList.remove('active'));
+            tabElements.forEach(tab => tab.classList.remove('active'));
+
+            const selectedTabButton = document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+            const selectedTab = document.getElementById(tabName);
+
+            if (selectedTabButton) selectedTabButton.classList.add('active');
+            if (selectedTab) selectedTab.classList.add('active');
+        }
+
+        function getCanonical(numberStr) {
+            if (!numberStr) return "";
+            return numberStr.toString().split('').sort().join('');
+        }
+
+        function getPermutations(str) {
+            str = str.toString();
+            if (str.length === 0) return [''];
+            if (str.length === 1) return [str];
+            if (str.length === 2) {
+                return str[0] === str[1] ? [str] : [str, str[1] + str[0]];
+            }
+            const result = new Set();
+            function findPermutationsRecursive(currentPermutation, remainingChars) {
+                if (remainingChars.length === 0) {
+                    result.add(currentPermutation);
+                    return;
+                }
+                for (let i = 0; i < remainingChars.length; i++) {
+                    const char = remainingChars[i];
+                    const nextRemaining = remainingChars.slice(0, i) + remainingChars.slice(i + 1);
+                    findPermutationsRecursive(currentPermutation + char, nextRemaining);
+                }
+            }
+            findPermutationsRecursive('', str);
+            return Array.from(result);
+        }
+
+        // --- Tod Lottery Functions ---
+        function saveTodDataToLocalStorage() {
+            localStorage.setItem('lotteryDataTodIntegratedV2', JSON.stringify(todData)); 
+        }
+
+        function displayTodDataInTable(filteredData = todData) {
+            todDataTableBody.innerHTML = '';
+            filteredData.forEach(item => {
+                const row = todDataTableBody.insertRow();
+                row.insertCell().textContent = item.name;
+                row.insertCell().textContent = item.number;
+                row.insertCell().textContent = item.money.toLocaleString(); 
+                
+                let categoryText = '';
+                if (item.category === TOD_CATEGORY_TENG) categoryText = 'โต๊ดเต็ง';
+                else if (item.category === TOD_CATEGORY_6กลับ) categoryText = 'โต๊ด6กลับ';
+                row.insertCell().textContent = categoryText;
+
+                const editCell = row.insertCell();
+                editCell.classList.add('text-center');
+                const editButton = document.createElement('button');
+                editButton.textContent = 'แก้ไข';
+                editButton.className = 'action-button edit-button';
+                editButton.onclick = () => {
+                    todEditingName = item.name;
+                    todEditingOriginalNumber = item.number.toString();
+                    todEditingOriginalCategory = item.category;
+                    todNameInputElement.value = item.name;
+                    todNumberInputElement.value = item.number;
+
+                    if (item.category === TOD_CATEGORY_6กลับ) {
+                        const permutations = getPermutations(item.number.toString());
+                        const numPerms = permutations.length > 0 ? permutations.length : 1;
+                        todMoneyInputElement.value = item.money / numPerms; 
+                        todCategory6กลับRadioElement.checked = true;
+                    } else if (item.category === TOD_CATEGORY_TENG) {
+                        todMoneyInputElement.value = item.money / 2; 
+                        todCategoryTengRadioElement.checked = true;
+                    } else { 
+                        todMoneyInputElement.value = item.money;
+                        todCategoryTengRadioElement.checked = true; 
+                    }
+                    updateTodMoneyLabelText();
+                    todAddDataButtonElement.textContent = 'บันทึกการแก้ไข';
+                    openTab('tod-input');
+                    todNameInputElement.focus();
+                };
+                editCell.appendChild(editButton);
+
+                const deleteCell = row.insertCell();
+                deleteCell.classList.add('text-center');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'ลบ';
+                deleteButton.className = 'action-button delete-button';
+                deleteButton.onclick = () => deleteTodEntryFromData(item.name, item.number, item.category);
+                deleteCell.appendChild(deleteButton);
+            });
+        }
+
+        function addOrUpdateTodDataEntry() {
+            const name = todNameInputElement.value.trim();
+            const numberStr = todNumberInputElement.value.trim();
+            const moneyPerInputStr = todMoneyInputElement.value.trim(); 
+            const selectedCategory = document.querySelector('input[name="tod-entry-category"]:checked').value;
+
+            if (!name || !numberStr || !moneyPerInputStr) {
+                showMessage(todInputMessageBoxElement, 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error'); return;
+            }
+            // Enforce 3-digit numbers for Tod lottery
+            if (numberStr.length !== 3 || !/^\d{3}$/.test(numberStr)) { // Check for exactly 3 digits
+                showMessage(todInputMessageBoxElement, 'หวยโต๊ดต้องเป็นเลข 3 หลักเท่านั้น', 'error'); return;
+            }
+            const moneyPerInputVal = parseInt(moneyPerInputStr);
+            if (isNaN(moneyPerInputVal) || moneyPerInputVal <= 0) {
+                showMessage(todInputMessageBoxElement, 'ยอดเงินต้องเป็นตัวเลขมากกว่า 0', 'error'); return;
+            }
+
+            let actualStoredMoney = moneyPerInputVal; 
+            
+            if (selectedCategory === TOD_CATEGORY_TENG) {
+                actualStoredMoney = moneyPerInputVal * 2; 
+            } else if (selectedCategory === TOD_CATEGORY_6กลับ) {
+                const permutations = getPermutations(numberStr); 
+                const numPerms = permutations.length > 0 ? permutations.length : 1;
+                actualStoredMoney = moneyPerInputVal * numPerms; 
+            }
+
+
+            if (todEditingName !== null) { 
+                todData = todData.filter(item => !(item.name === todEditingName && item.number.toString() === todEditingOriginalNumber && item.category === todEditingOriginalCategory));
+                const existingAfterEditIndex = todData.findIndex(d => d.name === name && d.number.toString() === numberStr && d.category === selectedCategory);
+                if (existingAfterEditIndex !== -1) {
+                    todData[existingAfterEditIndex].money += actualStoredMoney;
+                } else {
+                    todData.push({ name, number: parseInt(numberStr), money: actualStoredMoney, category: selectedCategory });
+                }
+                showMessage(todInputMessageBoxElement, `แก้ไขข้อมูลสำหรับ '${name}' สำเร็จ`, 'success'); // Enhanced message
+                todEditingName = null; todEditingOriginalNumber = null; todEditingOriginalCategory = null;
+                todAddDataButtonElement.textContent = 'เพิ่มข้อมูล (โต๊ด)';
+            } else {
+                const existingEntryIndex = todData.findIndex(item => item.name === name && item.number.toString() === numberStr && item.category === selectedCategory);
+                if (existingEntryIndex !== -1) {
+                    todData[existingEntryIndex].money += actualStoredMoney;
+                    showMessage(todInputMessageBoxElement, `อัปเดตยอดเงินสำหรับ '${name}' (เลข: ${numberStr}) สำเร็จ`, 'success'); // Enhanced message
+                } else {
+                    todData.push({ name, number: parseInt(numberStr), money: actualStoredMoney, category: selectedCategory });
+                    showMessage(todInputMessageBoxElement, `เพิ่มข้อมูลสำหรับ '${name}' สำเร็จ`, 'success'); // Enhanced message
+                }
+            }
+            saveTodDataToLocalStorage();
+            displayTodDataInTable();
+            // Keep name, clear others for Tod
+            todNumberInputElement.value = '';
+            todMoneyInputElement.value = '';
+            updateTodMoneyLabelText();
+            todNumberInputElement.focus();
+        }
+
+        function clearTodInputFieldsForNewEntry() {
+            // todNameInputElement.value = ''; // Keep name for Tod by default for faster entry for same person
+            todNumberInputElement.value = '';
+            todMoneyInputElement.value = '';
+            todCategoryTengRadioElement.checked = true; 
+            updateTodMoneyLabelText();
+            todEditingName = null; todEditingOriginalNumber = null; todEditingOriginalCategory = null;
+            todAddDataButtonElement.textContent = 'เพิ่มข้อมูล (โต๊ด)';
+        }
+
+        function displayTodSummaryData() {
+            const totalMoney = todData.reduce((sum, item) => sum + item.money, 0); 
+            todTotalMoneyLabelElement.textContent = `${totalMoney.toLocaleString()} บาท`;
+            const canonicalGroups = {};
+            todData.forEach(item => {
+                const canonical = getCanonical(item.number.toString());
+                if (!canonicalGroups[canonical]) canonicalGroups[canonical] = { entries: [], totalMoney: 0 };
+                canonicalGroups[canonical].entries.push(item);
+                canonicalGroups[canonical].totalMoney += item.money;
+            });
+            let sumDuplicateMoney = 0, sumUniqueMoney = 0;
+            const duplicateCanonicalForms = [];
+            for (const key in canonicalGroups) {
+                let distinctBetEntriesCount = 0;
+                const distinctBetSignatures = new Set();
+                canonicalGroups[key].entries.forEach(e => distinctBetSignatures.add(`${e.name}-${e.number}-${e.category}`));
+                distinctBetEntriesCount = distinctBetSignatures.size;
+                if (distinctBetEntriesCount > 1 || canonicalGroups[key].entries.length > distinctBetEntriesCount) {
+                    duplicateCanonicalForms.push(key);
+                }
+            }
+            const distinctCanonicalsInDuplicates = new Set(duplicateCanonicalForms);
+            for (const key in canonicalGroups) {
+                if (distinctCanonicalsInDuplicates.has(key)) sumDuplicateMoney += canonicalGroups[key].totalMoney;
+                else sumUniqueMoney += canonicalGroups[key].totalMoney;
+            }
+            todSumDuplicateLabelElement.textContent = `${sumDuplicateMoney.toLocaleString()} บาท`;
+            todSumUniqueLabelElement.textContent = `${sumUniqueMoney.toLocaleString()} บาท`;
+            todDuplicateCountLabelElement.textContent = `${distinctCanonicalsInDuplicates.size} ชุด`;
+            todDuplicateNumbersLabelElement.textContent = distinctCanonicalsInDuplicates.size > 0 ? Array.from(distinctCanonicalsInDuplicates).join(', ') : 'ไม่มี';
+            const profileTotals = {};
+            todData.forEach(item => profileTotals[item.name] = (profileTotals[item.name] || 0) + item.money);
+            todProfileTotalsDivElement.innerHTML = '';
+            if (Object.keys(profileTotals).length > 0) {
+                for (const name in profileTotals) {
+                    const card = document.createElement('div');
+                    card.className = 'p-3 rounded-md bg-gray-100 border border-gray-200';
+                    card.innerHTML = `<p class="font-semibold text-gray-700">${name}:</p> <p class="text-blue-700 text-xl">${profileTotals[name].toLocaleString()} บาท</p>`;
+                    todProfileTotalsDivElement.appendChild(card);
+                }
+            } else todProfileTotalsDivElement.textContent = 'ไม่มีข้อมูล';
+            todDuplicateNamesDivElement.innerHTML = '';
+            let hasDuplicateNames = false;
+            distinctCanonicalsInDuplicates.forEach(canon => {
+                const group = canonicalGroups[canon];
+                if (group) {
+                    hasDuplicateNames = true;
+                    const sectionDiv = document.createElement('div');
+                    sectionDiv.className = 'mb-3 p-3 rounded-md bg-yellow-100 border border-yellow-300 text-yellow-800 whitespace-pre-wrap';
+                    let sectionContent = `<strong class="text-yellow-900">ชุดเลข: ${canon}</strong> (ยอดจ่ายรวม: ${group.totalMoney.toLocaleString()} บาท)<br/>`;
+                    group.entries.forEach(entry => {
+                        let catText = '';
+                        if (entry.category === TOD_CATEGORY_TENG) catText = 'โต๊ดเต็ง';
+                        else if (entry.category === TOD_CATEGORY_6กลับ) catText = 'โต๊ด6กลับ';
+                        
+                        let moneyDetail = entry.money.toLocaleString();
+                        if (entry.category === TOD_CATEGORY_6กลับ) {
+                            const perms = getPermutations(entry.number.toString());
+                            const numP = perms.length > 0 ? perms.length : 1;
+                            moneyDetail = `${entry.money.toLocaleString()} (${(entry.money/numP).toLocaleString()}x${numP}กลับ)`;
+                        } else if (entry.category === TOD_CATEGORY_TENG) {
+                             moneyDetail = `${entry.money.toLocaleString()} (จากยอดตั้งต้น ${(entry.money/2).toLocaleString()} x2)`;
+                        }
+                        sectionContent += `&nbsp;&nbsp;- ${entry.name} (${entry.number}-${catText}) - ยอด: ${moneyDetail} บาท<br/>`;
+                    });
+                    sectionDiv.innerHTML = sectionContent;
+                    todDuplicateNamesDivElement.appendChild(sectionDiv);
+                }
+            });
+            if (!hasDuplicateNames) todDuplicateNamesDivElement.textContent = 'ไม่มีชุดเลขที่ซ้ำกัน';
+        }
+
+        function deleteTodEntryFromData(name, number, category) {
+            const numToDelete = parseInt(number);
+            const originalLength = todData.length;
+            todData = todData.filter(item => !(item.name === name && item.number === numToDelete && item.category === category));
+            if (todData.length < originalLength) {
+                saveTodDataToLocalStorage();
+                const searchTerm = todSearchInputElement.value.toLowerCase().trim();
+                displayTodDataInTable(searchTerm ? todData.filter(item => item.name.toLowerCase().includes(searchTerm)) : todData);
+                showMessage(todInputMessageBoxElement, 'ลบข้อมูล (โต๊ด) สำเร็จ', 'success');
+            } else showMessage(todInputMessageBoxElement, 'ไม่พบข้อมูล (โต๊ด) ที่ต้องการลบ', 'error');
+        }
+
+        function searchTodDataAndDisplay() {
+            const searchTerm = todSearchInputElement.value.toLowerCase().trim();
+            displayTodDataInTable(searchTerm ? todData.filter(item => item.name.toLowerCase().includes(searchTerm)) : todData);
+        }
+
+        function calculateTodLotteryWinnings() {
+            const winningNumberStr = todLotteryNumberInputElement.value.trim();
+            const prizeRateTengStr = todPrizeRateTengInputElement.value.trim(); 
+            const prizeRate6กลับStr = todPrizeRate6กลับInputElement.value.trim(); 
+            todLotteryResultDivElement.classList.remove('success', 'error', 'info', 'show');
+            todLotteryResultDivElement.style.display = 'none';
+
+            if (!winningNumberStr || !prizeRateTengStr || !prizeRate6กลับStr) { 
+                todLotteryResultDivElement.textContent = 'กรุณากรอกเลขรางวัลและอัตราจ่ายสำหรับทั้งสองประเภท (โต๊ด)';
+                todLotteryResultDivElement.className = 'message-box error show'; return;
+            }
+             // Enforce 3-digit winning number for Tod lottery
+            if (winningNumberStr.length !== 3 || !/^\d{3}$/.test(winningNumberStr)) {
+                todLotteryResultDivElement.textContent = 'เลขรางวัล (โต๊ด) ต้องเป็น 3 หลักเท่านั้น';
+                todLotteryResultDivElement.className = 'message-box error show'; return;
+            }
+            const prizeRateTeng = parseFloat(prizeRateTengStr); 
+            const prizeRate6กลับ = parseFloat(prizeRate6กลับStr); 
+            if (isNaN(prizeRateTeng) || prizeRateTeng <= 0 || isNaN(prizeRate6กลับ) || prizeRate6กลับ <= 0) { 
+                todLotteryResultDivElement.textContent = 'อัตราการจ่าย (โต๊ด) ต้องเป็นตัวเลขมากกว่า 0';
+                todLotteryResultDivElement.className = 'message-box error show'; return;
+            }
+
+            const winners = [];
+            todData.forEach(item => {
+                let currentPrizeRate = 0, wins = false, effectiveWinType = "", baseStake = 0;
+                if (item.category === TOD_CATEGORY_TENG) { 
+                    if (getCanonical(item.number.toString()) === getCanonical(winningNumberStr)) {
+                        wins = true; currentPrizeRate = prizeRateTeng; effectiveWinType = 'โต๊ดเต็ง'; 
+                        baseStake = item.money / 2; 
+                    }
+                } else if (item.category === TOD_CATEGORY_6กลับ) { 
+                    const permutations = getPermutations(item.number.toString());
+                    if (permutations.includes(winningNumberStr)) {
+                        wins = true; currentPrizeRate = prizeRate6กลับ; effectiveWinType = 'โต๊ด6กลับ';
+                        baseStake = item.money / (permutations.length > 0 ? permutations.length : 1);
+                    }
+                }
+                if (wins) {
+                    winners.push({...item, appliedPrizeRate: currentPrizeRate, effectiveWinType, calculatedWinnings: baseStake * currentPrizeRate, baseStakeForPrize: baseStake});
+                }
+            });
+            todLotteryResultDivElement.style.display = 'block'; 
+            todLotteryResultDivElement.classList.add('show');
+
+            if (winners.length === 0) {
+                todLotteryResultDivElement.innerHTML = 'ไม่มีผู้ถูกรางวัล (โต๊ด) สำหรับเลขนี้';
+                todLotteryResultDivElement.className = 'message-box info show'; return;
+            }
+            const consolidated = {}; let totalPrize = 0;
+            winners.forEach(w => {
+                if (!consolidated[w.name]) consolidated[w.name] = {name: w.name, totalWinnings: 0, entries: []};
+                consolidated[w.name].totalWinnings += w.calculatedWinnings;
+                totalPrize += w.calculatedWinnings;
+                let costDetail = w.money.toLocaleString();
+                let stakeDetail = "";
+                let categoryTextDisplay = "";
+
+                if(w.category === TOD_CATEGORY_6กลับ){
+                    categoryTextDisplay = "โต๊ด6กลับ";
+                    const perms = getPermutations(w.number.toString());
+                    costDetail = `${w.money.toLocaleString()} (จาก ${w.baseStakeForPrize.toLocaleString()}x${perms.length>0?perms.length:1}กลับ)`;
+                    stakeDetail = ` (ยอดต่อกลับ ${w.baseStakeForPrize.toLocaleString()})`;
+                } else if (w.category === TOD_CATEGORY_TENG) {
+                    categoryTextDisplay = "โต๊ดเต็ง";
+                    costDetail = `${w.money.toLocaleString()} (จากยอดตั้งต้น ${w.baseStakeForPrize.toLocaleString()} x2)`;
+                    stakeDetail = ` (ยอดตั้งต้น ${w.baseStakeForPrize.toLocaleString()})`;
+                }
+                consolidated[w.name].entries.push(`เลข ${w.number} (ประเภท: ${categoryTextDisplay}, ยอดจ่ายจริง: ${costDetail}) ชนะแบบ ${w.effectiveWinType}${stakeDetail} (อัตราจ่าย: ${w.appliedPrizeRate}), ได้รับ ${w.calculatedWinnings.toLocaleString()} บาท`);
+            });
+            let resultText = `<strong class="text-lg">ผู้ถูกรางวัล (โต๊ด) สำหรับเลข ${winningNumberStr}:</strong><br/><br/>`;
+            for (const name in consolidated) {
+                resultText += `<strong>${consolidated[name].name}</strong>:<br/>`;
+                consolidated[name].entries.forEach(d => resultText += `&nbsp;&nbsp;- ${d}<br/>`);
+                resultText += `&nbsp;&nbsp;<em>รวมรับ: ${consolidated[name].totalWinnings.toLocaleString()} บาท</em><br/><br/>`;
+            }
+            resultText += `<hr class="my-2"/><strong>รวมจ่าย (โต๊ด) ทั้งหมด: ${totalPrize.toLocaleString()} บาท</strong>`;
+            todLotteryResultDivElement.innerHTML = resultText;
+            todLotteryResultDivElement.className = 'message-box success show text-left';
+        }
+
+        function updateTodMoneyLabelText() {
+            if (todCategoryTengRadioElement.checked) {
+                todMoneyLabelElement.textContent = 'ยอดเงิน (สำหรับโต๊ดเต็ง: ระบบจะ x2 จากยอดนี้):';
+            } else if (todCategory6กลับRadioElement.checked) {
+                todMoneyLabelElement.textContent = 'ยอดเงิน (สำหรับโต๊ด6กลับ: ยอดต่อ 1 กลับ):';
+            } else {
+                 todMoneyLabelElement.textContent = 'ยอดเงิน:'; 
+            }
+        }
+
+
+        // --- Normal Lottery Functions ---
+        function saveNormalDataToLocalStorage() {
+            localStorage.setItem('lotteryDataNormalIntegratedV1', JSON.stringify(normalData));
+        }
+
+        function displayNormalDataInTable(filteredData = normalData) {
+            normalDataTableBody.innerHTML = '';
+            filteredData.forEach(item => {
+                const row = normalDataTableBody.insertRow();
+                row.insertCell().textContent = item.name;
+                row.insertCell().textContent = item.number;
+                row.insertCell().textContent = item.money.toLocaleString();
+                row.insertCell().textContent = item.category; 
+
+                const editCell = row.insertCell();
+                editCell.classList.add('text-center');
+                const editButton = document.createElement('button');
+                editButton.textContent = 'แก้ไข';
+                editButton.className = 'action-button edit-button';
+                editButton.onclick = () => {
+                    normalEditingName = item.name;
+                    normalEditingOriginalNumber = item.number.toString();
+                    normalEditingOriginalCategory = item.category;
+                    normalNameInputElement.value = item.name;
+                    normalNumberInputElement.value = item.number;
+                    normalMoneyInputElement.value = item.money;
+                    if (item.category === NORMAL_CATEGORY_TOP) normalCategoryTopRadioElement.checked = true;
+                    else normalCategoryBottomRadioElement.checked = true;
+                    normalAddDataButtonElement.textContent = 'บันทึกการแก้ไข';
+                    openTab('normal-input'); 
+                    normalNameInputElement.focus();
+                };
+                editCell.appendChild(editButton);
+
+                const deleteCell = row.insertCell();
+                deleteCell.classList.add('text-center');
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'ลบ';
+                deleteButton.className = 'action-button delete-button';
+                deleteButton.onclick = () => deleteNormalEntryFromData(item.name, item.number, item.category);
+                deleteCell.appendChild(deleteButton);
+            });
+        }
+        
+        function addOrUpdateNormalDataEntry() {
+            const name = normalNameInputElement.value.trim();
+            const numberStr = normalNumberInputElement.value.trim();
+            const moneyStr = normalMoneyInputElement.value.trim();
+            const selectedCategory = document.querySelector('input[name="normal-entry-category"]:checked').value;
+
+            if (!name || !numberStr || !moneyStr) {
+                showMessage(normalInputMessageBoxElement, 'กรุณากรอกข้อมูลให้ครบทุกช่อง', 'error'); return;
+            }
+            if (!/^\d{2,3}$/.test(numberStr)) {
+                showMessage(normalInputMessageBoxElement, 'เลขต้องเป็นตัวเลข 2 หรือ 3 หลักเท่านั้น', 'error'); return;
+            }
+            const moneyVal = parseInt(moneyStr);
+            if (isNaN(moneyVal) || moneyVal <= 0) {
+                showMessage(normalInputMessageBoxElement, 'ยอดเงินต้องเป็นตัวเลขมากกว่า 0', 'error'); return;
+            }
+            const numberVal = parseInt(numberStr);
+
+            if (normalEditingName !== null) { 
+                normalData = normalData.filter(item => 
+                    !(item.name === normalEditingName && item.number.toString() === normalEditingOriginalNumber && item.category === normalEditingOriginalCategory)
+                );
+                const existingIdx = normalData.findIndex(d => d.name === name && d.number === numberVal && d.category === selectedCategory);
+                if (existingIdx !== -1) normalData[existingIdx].money += moneyVal;
+                else normalData.push({ name, number: numberVal, money: moneyVal, category: selectedCategory });
+                
+                showMessage(normalInputMessageBoxElement, `แก้ไขข้อมูล (หวยปกติ) สำหรับ '${name}' สำเร็จ`, 'success'); // Enhanced
+                normalEditingName = null; normalEditingOriginalNumber = null; normalEditingOriginalCategory = null;
+                normalAddDataButtonElement.textContent = 'เพิ่มข้อมูล (หวยปกติ)';
+            } else { 
+                const existingEntryIndex = normalData.findIndex(item => item.name === name && item.number === numberVal && item.category === selectedCategory);
+                if (existingEntryIndex !== -1) {
+                    normalData[existingEntryIndex].money += moneyVal;
+                    showMessage(normalInputMessageBoxElement, `อัปเดตยอดเงิน (หวยปกติ) สำหรับ '${name}' (เลข: ${numberStr}) สำเร็จ`, 'success'); // Enhanced
+                } else {
+                    normalData.push({ name, number: numberVal, money: moneyVal, category: selectedCategory });
+                    showMessage(normalInputMessageBoxElement, `เพิ่มข้อมูล (หวยปกติ) สำหรับ '${name}' สำเร็จ`, 'success'); // Enhanced
+                }
+            }
+            saveNormalDataToLocalStorage();
+            displayNormalDataInTable();
+            // Keep name for normal lottery as well
+            normalNumberInputElement.value = '';
+            normalMoneyInputElement.value = '';
+            normalNumberInputElement.focus();
+        }
+
+        function clearNormalInputFieldsForNewEntry() {
+            // normalNameInputElement.value = ''; // Keep name for normal
+            normalNumberInputElement.value = '';
+            normalMoneyInputElement.value = '';
+            normalCategoryTopRadioElement.checked = true;
+            normalEditingName = null; normalEditingOriginalNumber = null; normalEditingOriginalCategory = null;
+            normalAddDataButtonElement.textContent = 'เพิ่มข้อมูล (หวยปกติ)';
+        }
+
+        function displayNormalSummaryData() {
+            let totalTop = 0;
+            let totalBottom = 0;
+            const profileTotals = {};
+            const numberCountsTop = {};
+            const numberCountsBottom = {};
+
+            normalData.forEach(item => {
+                profileTotals[item.name] = (profileTotals[item.name] || 0) + item.money;
+                if (item.category === NORMAL_CATEGORY_TOP) {
+                    totalTop += item.money;
+                    numberCountsTop[item.number] = (numberCountsTop[item.number] || 0) + 1;
+                } else if (item.category === NORMAL_CATEGORY_BOTTOM) {
+                    totalBottom += item.money;
+                    numberCountsBottom[item.number] = (numberCountsBottom[item.number] || 0) + 1;
+                }
+            });
+
+            normalSummaryTotalTopElement.textContent = `${totalTop.toLocaleString()} บาท`;
+            normalSummaryTotalBottomElement.textContent = `${totalBottom.toLocaleString()} บาท`;
+            normalSummaryTotalAllElement.textContent = `${(totalTop + totalBottom).toLocaleString()} บาท`;
+
+            normalProfileTotalsDivElement.innerHTML = '';
+            if (Object.keys(profileTotals).length > 0) {
+                for (const name in profileTotals) {
+                    const card = document.createElement('div');
+                    card.className = 'p-3 rounded-md bg-gray-100 border border-gray-200';
+                    card.innerHTML = `<p class="font-semibold text-gray-700">${name}:</p> <p class="text-blue-700 text-xl">${profileTotals[name].toLocaleString()} บาท</p>`;
+                    normalProfileTotalsDivElement.appendChild(card);
+                }
+            } else {
+                normalProfileTotalsDivElement.textContent = 'ไม่มีข้อมูล';
+            }
+
+            const duplicateNumbersTop = Object.entries(numberCountsTop).filter(([num, count]) => count > 1).map(([num, count]) => `${num} (${count} ครั้ง)`);
+            const duplicateNumbersBottom = Object.entries(numberCountsBottom).filter(([num, count]) => count > 1).map(([num, count]) => `${num} (${count} ครั้ง)`);
+
+            normalDuplicateNumbersTopElement.textContent = duplicateNumbersTop.length > 0 ? duplicateNumbersTop.join(', ') : 'ไม่มีเลขซ้ำ (บน)';
+            normalDuplicateNumbersBottomElement.textContent = duplicateNumbersBottom.length > 0 ? duplicateNumbersBottom.join(', ') : 'ไม่มีเลขซ้ำ (ล่าง)';
+        }
+        
+        function deleteNormalEntryFromData(name, number, category) {
+            const numToDelete = parseInt(number);
+            const originalLength = normalData.length;
+            normalData = normalData.filter(item => !(item.name === name && item.number === numToDelete && item.category === category));
+            if (normalData.length < originalLength) {
+                saveNormalDataToLocalStorage();
+                const searchTerm = normalSearchInputElement.value.toLowerCase().trim();
+                displayNormalDataInTable(searchTerm ? normalData.filter(item => item.name.toLowerCase().includes(searchTerm)) : normalData);
+                showMessage(normalInputMessageBoxElement, 'ลบข้อมูล (หวยปกติ) สำเร็จ', 'success');
+            } else {
+                showMessage(normalInputMessageBoxElement, 'ไม่พบข้อมูล (หวยปกติ) ที่ต้องการลบ', 'error');
+            }
+        }
+
+        function searchNormalDataAndDisplay() {
+            const searchTerm = normalSearchInputElement.value.toLowerCase().trim();
+            displayNormalDataInTable(searchTerm ? normalData.filter(item => item.name.toLowerCase().includes(searchTerm)) : normalData);
+        }
+
+        function calculateNormalLotteryWinnings() {
+            const winningNumTopStr = normalLotteryNumberTopInputElement.value.trim();
+            const prizeRateTopStr = normalPrizeRateTopInputElement.value.trim();
+            const winningNumBottomStr = normalLotteryNumberBottomInputElement.value.trim();
+            const prizeRateBottomStr = normalPrizeRateBottomInputElement.value.trim();
+
+            normalLotteryResultDivElement.classList.remove('success', 'error', 'info', 'show');
+            normalLotteryResultDivElement.style.display = 'none';
+
+            const topProvided = winningNumTopStr && prizeRateTopStr;
+            const bottomProvided = winningNumBottomStr && prizeRateBottomStr;
+
+            if (!topProvided && !bottomProvided) {
+                normalLotteryResultDivElement.textContent = 'กรุณากรอกเลขรางวัลและอัตราจ่ายสำหรับบนหรือล่าง (หรือทั้งคู่)';
+                normalLotteryResultDivElement.className = 'message-box error show'; return;
+            }
+
+            let prizeRateTop = 0, prizeRateBottom = 0;
+            if (topProvided) {
+                if (!/^\d{2,3}$/.test(winningNumTopStr)) {
+                     normalLotteryResultDivElement.textContent = 'เลขรางวัลบนต้องเป็น 2 หรือ 3 หลัก';
+                     normalLotteryResultDivElement.className = 'message-box error show'; return;
+                }
+                prizeRateTop = parseFloat(prizeRateTopStr);
+                if (isNaN(prizeRateTop) || prizeRateTop <= 0) {
+                    normalLotteryResultDivElement.textContent = 'อัตราจ่ายบนต้องเป็นตัวเลขมากกว่า 0';
+                    normalLotteryResultDivElement.className = 'message-box error show'; return;
+                }
+            }
+             if (bottomProvided) {
+                if (!/^\d{2,3}$/.test(winningNumBottomStr)) {
+                     normalLotteryResultDivElement.textContent = 'เลขรางวัลล่างต้องเป็น 2 หรือ 3 หลัก';
+                     normalLotteryResultDivElement.className = 'message-box error show'; return;
+                }
+                prizeRateBottom = parseFloat(prizeRateBottomStr);
+                if (isNaN(prizeRateBottom) || prizeRateBottom <= 0) {
+                    normalLotteryResultDivElement.textContent = 'อัตราจ่ายล่างต้องเป็นตัวเลขมากกว่า 0';
+                    normalLotteryResultDivElement.className = 'message-box error show'; return;
+                }
+            }
+
+            const winners = [];
+            normalData.forEach(item => {
+                let winnings = 0;
+                let winDetail = "";
+                if (item.category === NORMAL_CATEGORY_TOP && topProvided && item.number.toString() === winningNumTopStr) {
+                    winnings = item.money * prizeRateTop;
+                    winDetail = `ถูกบน (เลข ${item.number}, ยอด ${item.money.toLocaleString()}) ได้รับ ${winnings.toLocaleString()}`;
+                } else if (item.category === NORMAL_CATEGORY_BOTTOM && bottomProvided && item.number.toString() === winningNumBottomStr) {
+                    winnings = item.money * prizeRateBottom;
+                    winDetail = `ถูกล่าง (เลข ${item.number}, ยอด ${item.money.toLocaleString()}) ได้รับ ${winnings.toLocaleString()}`;
+                }
+                if (winnings > 0) {
+                    winners.push({ name: item.name, detail: winDetail, amount: winnings });
+                }
+            });
+
+            normalLotteryResultDivElement.style.display = 'block'; 
+            normalLotteryResultDivElement.classList.add('show');
+
+            if (winners.length === 0) {
+                normalLotteryResultDivElement.innerHTML = 'ไม่มีผู้ถูกรางวัล (หวยปกติ)';
+                normalLotteryResultDivElement.className = 'message-box info show'; return;
+            }
+
+            const consolidated = {}; let totalPrize = 0;
+            winners.forEach(w => {
+                if (!consolidated[w.name]) consolidated[w.name] = { name: w.name, totalWinnings: 0, entries: [] };
+                consolidated[w.name].totalWinnings += w.amount;
+                consolidated[w.name].entries.push(w.detail);
+                totalPrize += w.amount;
+            });
+
+            let resultText = `<strong class="text-lg">ผู้ถูกรางวัล (หวยปกติ):</strong><br/>`;
+            if(topProvided) resultText += `รางวัลบน: ${winningNumTopStr} (อัตราจ่าย: ${prizeRateTop})<br/>`;
+            if(bottomProvided) resultText += `รางวัลล่าง: ${winningNumBottomStr} (อัตราจ่าย: ${prizeRateBottom})<br/><br/>`;
+
+            for (const name in consolidated) {
+                resultText += `<strong>${consolidated[name].name}</strong>:<br/>`;
+                consolidated[name].entries.forEach(d => resultText += `&nbsp;&nbsp;- ${d} บาท<br/>`);
+                resultText += `&nbsp;&nbsp;<em>รวมรับ: ${consolidated[name].totalWinnings.toLocaleString()} บาท</em><br/><br/>`;
+            }
+            resultText += `<hr class="my-2"/><strong>รวมจ่าย (หวยปกติ) ทั้งหมด: ${totalPrize.toLocaleString()} บาท</strong>`;
+            normalLotteryResultDivElement.innerHTML = resultText;
+            normalLotteryResultDivElement.className = 'message-box success show text-left';
+        }
+
+
+        // --- Common Event Listeners ---
+        clearDataButtonElement.addEventListener('click', () => {
+            if (confirm('คุณต้องการล้างข้อมูลทั้งหมดในโปรแกรม (ทั้งหวยโต๊ดและหวยปกติ) ใช่หรือไม่? การกระทำนี้ไม่สามารถย้อนกลับได้')) {
+                todData = []; saveTodDataToLocalStorage(); displayTodDataInTable(); clearTodInputFieldsForNewEntry();
+                normalData = []; saveNormalDataToLocalStorage(); displayNormalDataInTable(); clearNormalInputFieldsForNewEntry();
+                
+                [todLotteryResultDivElement, normalLotteryResultDivElement].forEach(el => {
+                    el.classList.remove('show'); el.style.display = 'none'; el.innerHTML = '';
+                });
+                [todPrizeRateTengInputElement, todPrizeRate6กลับInputElement, 
+                 normalPrizeRateTopInputElement, normalPrizeRateBottomInputElement].forEach(el => el.value = '');
+                
+                const activeTodTab = document.querySelector('#tod-input.active, #tod-display.active, #tod-summary.active, #tod-lottery.active');
+                if (activeTodTab) {
+                    showMessage(todInputMessageBoxElement,'ล้างข้อมูลทั้งหมดสำเร็จ', 'success'); 
+                } else {
+                    const activeNormalTab = document.querySelector('#normal-input.active, #normal-display.active, #normal-summary.active, #normal-calc.active');
+                    if (activeNormalTab) {
+                         showMessage(normalInputMessageBoxElement,'ล้างข้อมูลทั้งหมดสำเร็จ', 'success'); 
+                    } else {
+                        showMessage(todInputMessageBoxElement,'ล้างข้อมูลทั้งหมดสำเร็จ', 'success'); 
+                    }
+                }
+            }
+        });
+
+        tabButtonElements.forEach(button => {
+            button.addEventListener('click', () => {
+                const tabName = button.dataset.tab;
+                if (button.id === 'clear-data') return; 
+
+                openTab(tabName);
+                // Handle Tod Lottery Tabs
+                if (tabName === 'tod-input') {
+                   if (!todEditingName) clearTodInputFieldsForNewEntry();
+                   updateTodMoneyLabelText();
+                } else if (tabName === 'tod-summary') {
+                    displayTodSummaryData();
+                } else if (tabName === 'tod-display') {
+                    displayTodDataInTable(todData); 
+                } 
+                // Handle Normal Lottery Tabs
+                else if (tabName === 'normal-input'){
+                    if(!normalEditingName) clearNormalInputFieldsForNewEntry();
+                } else if (tabName === 'normal-display') {
+                    displayNormalDataInTable(normalData);
+                } else if (tabName === 'normal-summary') {
+                    displayNormalSummaryData();
+                }
+            });
+        });
+        
+        // --- Tod Lottery Event Listeners ---
+        todAddDataButtonElement.addEventListener('click', addOrUpdateTodDataEntry);
+        todSearchDataButtonElement.addEventListener('click', searchTodDataAndDisplay);
+        todSearchInputElement.addEventListener('keyup', (e) => { if (e.key === "Enter") searchTodDataAndDisplay(); else if (todSearchInputElement.value.trim() === "") displayTodDataInTable(todData); });
+        todCalculateLotteryButtonElement.addEventListener('click', calculateTodLotteryWinnings);
+        [todCategoryTengRadioElement, todCategory6กลับRadioElement].forEach(r => r.addEventListener('change', updateTodMoneyLabelText)); 
+        
+        // --- Normal Lottery Event Listeners ---
+        normalAddDataButtonElement.addEventListener('click', addOrUpdateNormalDataEntry);
+        normalSearchDataButtonElement.addEventListener('click', searchNormalDataAndDisplay);
+        normalSearchInputElement.addEventListener('keyup', (e) => { if (e.key === "Enter") searchNormalDataAndDisplay(); else if (normalSearchInputElement.value.trim() === "") displayNormalDataInTable(normalData); });
+        normalCalculateLotteryButtonElement.addEventListener('click', calculateNormalLotteryWinnings);
+
+        // --- Landing Page and Key Prompt Logic ---
+        function showAppSection(mode) {
+            landingPageElement.style.display = 'none';
+            appContainerElement.style.display = 'block';
+            setActiveModeTabButtons(mode); 
+            if (mode === 'tod') {
+                openTab('tod-input');
+                if (!todEditingName) clearTodInputFieldsForNewEntry();
+                updateTodMoneyLabelText();
+            } else if (mode === 'normal') {
+                openTab('normal-input');
+                if (!normalEditingName) clearNormalInputFieldsForNewEntry();
+            }
+        }
+
+        // REMOVED KEY PROMPT LOGIC - submitKeyButtonElement and keyInputElement listeners
+
+        gotoTodLotteryButton.addEventListener('click', () => showAppSection('tod'));
+        gotoNormalLotteryButton.addEventListener('click', () => showAppSection('normal'));
+        
+        backToLandingButton.addEventListener('click', () => {
+            appContainerElement.style.display = 'none';
+            setActiveModeTabButtons('none'); 
+            landingPageElement.style.display = 'block'; // Go back to landing page directly
+        });
+
+
+        // --- Initial Load ---
+        window.onload = () => {
+            // REMOVED KEY PROMPT DISPLAY - keyPromptPageElement.style.display = 'block'; 
+            landingPageElement.style.display = 'block'; // Show landing page directly
+            appContainerElement.style.display = 'none'; 
+            setActiveModeTabButtons('none'); 
+
+            displayTodDataInTable(); 
+            displayNormalDataInTable(); 
+            updateTodMoneyLabelText(); 
+        };
+    </script>
+</body>
+</html>
